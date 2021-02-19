@@ -1,4 +1,5 @@
-#!/bin/bash/
+#!/bin/bash
+
 #read and check usernames
 function usernames {
   for (( count=$(($count+1)) ; $count < $len; count++ )); do
@@ -70,21 +71,20 @@ echo "Reads groups:${arr3[*]}"
 echo "hash:$userhash"
 
 for name in ${arr2[*]}; do
+  #str= Groups comma separated
   str=$(echo ${arr3[*]} | sed 's/ /,/g')
   `which useradd` -m -s /bin/bash -G $str -c 'script created user on '`date +"%m-%d-%y"` $name 
-  # `which useradd` -m -s /bin/bash -G `echo ${arr3[*]} | sed 's/ /,/g'` -c 'script created user on '`date +"%m-%d-%y"` $name 
-  echo "useradd -m -s /bin/bash -G `echo ${arr3[*]} | sed 's/ /,/g'` -c 'scripted created user on date +%m-%d-%y' $name" 
+  echo "useradd -m -s /bin/bash -G $str -c 'scripted created user on date +%m-%d-%y' $name" 
   echo ">>>"
   #echo "2hash:$userhash" 
-
-  #str="/$name/s/!!/"
-
+  # $ -> \$ ; / -> \/
   str=$(echo $userhash | sed 's/\$/\\$/g; s/\//\\\//g' )
 
   echo "/$name/s/!!/$str"
 
   echo ">>>"
   echo "/^${name}/s/${name}::/${name}:${str}:/"
+  #insert password hash
   sed -i "/^${name}/s/!!/${str}/; /^${name}/s/${name}::/${name}:${str}:/" /etc/shadow
 done
 exit 0
